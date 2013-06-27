@@ -67,11 +67,14 @@ else:
     print "project directory and run this command again."
     print ""
     print "Example .sprite_generator file : "
+    print ">"
+    print ">[path]"
+    print ">inputPath=util/assets"
+    print ">outputPath=css/sprite"
+    print ">"
     print ""
-    print "[path]"
-    print "inputPath=util/assets"
-    print "outputPath=css/sprite"
-    print ""
+    print "exiting ... "
+    exit()
 
 
 def getDimensions(path):
@@ -117,7 +120,7 @@ def getImage(fileSelector, filePath) :
 
 
 
-def ProcessFile(filename, selector):
+def ProcessFile(dirname, filename, selector):
     filePath = os.path.join(dirname, filename)
     fileSelector = selector + ' ' + filename[:-4]
     if filename[0] == '&':
@@ -176,7 +179,7 @@ def ProcessFolder(dirname, selector):
         ProcessFolder(subdirPath, subdirSelector)
 
     for filename in filenames:
-        ProcessFile(filename, selector)
+        ProcessFile(dirname, filename, selector)
         
 
 
