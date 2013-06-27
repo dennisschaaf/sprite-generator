@@ -6,7 +6,7 @@ setup(
     packages=['spritegenerator',],
     license='MIT',
     long_description=open('README.md').read(),
-    scripts=['learningtest/learningTest.py'],
+    scripts=['spritegenerator/sprite_generator.py'],
     install_requires=[
     	'Pillow==1.7.8'
     ]
