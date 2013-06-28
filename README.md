@@ -24,6 +24,7 @@ For example if you have the following directory structure, the files will be tak
 
 ![Directory Structure](http://dennisschaaf.github.io/sprite-generator/img/sprite_generator_sample_structure.png "Directory Structure")
 
+.sprite_generator
 <pre><code>[path]
 inputPath=assets
 outputPath=css/sprite
@@ -38,3 +39,10 @@ Once the project is configured you can execute the spite generator script from a
 <pre><code>$ cd /your/project
 $ sprite_generator.py
 </code></pre>
+
+This will take all the assets and package them up and generate the CSS and PNG file.
+
+The output will look something like this:
+
+![Output](http://dennisschaaf.github.io/sprite-generator/img/generator_output.png "Generator Output")
+
