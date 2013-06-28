@@ -62,16 +62,19 @@ if(rootPath):
     print 'output: ', outputPath
 
 else: 
+    print ""
+    print " *** ERROR ***"
+    print ""
     print "Sprite Generator needs a configuration file to run. Place a"
     print "configuration file named '.sprite_generator' in the root of your  "
     print "project directory and run this command again."
     print ""
     print "Example .sprite_generator file : "
     print ">"
-    print ">[path]"
-    print ">inputPath=util/assets"
-    print ">outputPath=css/sprite"
-    print ">"
+    print "> [path]"
+    print "> inputPath=util/assets"
+    print "> outputPath=css/sprite"
+    print "> "
     print ""
     print "exiting ... "
     exit()
