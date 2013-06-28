@@ -50,7 +50,7 @@ if(rootPath):
     config.readfp(open(os.path.join(rootPath, '.sprite_generator')))
 
     inputPathAr = config.get('path', 'inputpath').split('/')
-    outputPathAr = config.get('path', 'inputpath').split('/')
+    outputPathAr = config.get('path', 'outputpath').split('/')
     
     inputPath = os.path.join(rootPath, *inputPathAr) 
     outputPath = os.path.join(rootPath, *outputPathAr)
@@ -114,6 +114,7 @@ def getImage(fileSelector, filePath) :
         lastColon = 0
 
 
+
     if lastColon > 1 :
         root = prefix + suffix[:lastColon]
     elif lastDot > 1:
@@ -128,6 +129,8 @@ def ProcessFile(dirname, filename, selector):
     fileSelector = selector + ' ' + filename[:-4]
     if filename[0] == '&':
         fileSelector =  selector + filename[1:-4]
+    elif filename[0] == "_":
+        fileSelector = selector + ' .' + filename[1:-4]
 
     if filename.endswith('.png') and filename != outputImage:
         obj = getImage(fileSelector, filePath)
