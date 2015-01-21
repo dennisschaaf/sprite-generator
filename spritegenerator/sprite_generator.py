@@ -1,4 +1,4 @@
-#!python
+#!/usr/bin/env python
 
 #
 #   Sprite Generator
@@ -29,6 +29,7 @@ imageHeight = 0
 padding = 0
 rootObjects = {}
 backgroundObjects = []
+retina = True
 
 # find the root path by looking for the .sprite_generator file.
 def getRootPath(path):
@@ -51,6 +52,7 @@ if(rootPath):
     config.add_section('generator')
     config.set('generator','findCommonRoot', 'no')
     config.set('generator','backgroundPrefix', 'bg-')
+    config.set('generator','retina', 'no')
     config.readfp(open(os.path.join(rootPath, '.sprite_generator')))
 
     inputPathAr = config.get('path', 'inputpath').split('/')
@@ -58,6 +60,7 @@ if(rootPath):
 
     backgroundPrefix = config.get('generator', 'backgroundPrefix')
     findCommonRoot = config.getboolean('generator','findCommonRoot')
+    retina = config.getboolean('generator','retina')
     
     inputPath = os.path.join(rootPath, *inputPathAr) 
     outputPath = os.path.join(rootPath, *outputPathAr)
@@ -100,6 +103,7 @@ def getImage(fileSelector, filePath) :
     lastSpace = fileSelector.rfind(' ')
     prefix = ""
     suffix = fileSelector;
+    retina = False
 
     # This Logic tries to find the root of the element
     # this is not quite Css query normed yet.
@@ -128,6 +132,15 @@ def getImage(fileSelector, filePath) :
         lastDot = 0
         lastColon = 0
 
+    # detect retina images
+    if suffix[-3:] == "@2x":
+        suffix = suffix[:-3]
+        root = prefix + suffix 
+        # lastDot = 0
+        # lastColon = 0
+        retina = True
+
+
 
 
     if lastColon > 1 :
@@ -135,7 +148,7 @@ def getImage(fileSelector, filePath) :
     elif lastDot > 1:
         root = prefix + suffix[:lastDot]
 
-    return {'root': root.strip(), 'selector' : prefix + suffix, 'file' : filePath, 'size': getDimensions(filePath) }
+    return {'root': root.strip(), 'selector' : prefix + suffix, 'file' : filePath, 'size': getDimensions(filePath), 'retina': retina }
 
 
 
@@ -150,6 +163,9 @@ def ProcessFile(dirname, filename, selector):
     if filename.endswith('.png') and filename != outputImage:
         obj = getImage(fileSelector, filePath)
 
+        # if it's a retina image only gather retina images
+        # if it's not retina only gather normal images
+        # if(obj['retina'] == retina):
         if(filename.startswith(backgroundPrefix)):
             backgroundObjects.append(obj)
         else:  
@@ -219,7 +235,7 @@ os.makedirs(outputPath)
 # Now that the folder has been processed, genereate a png and css files.
 print "Drawing ... "
 image = Image.new('RGBA', (imageWidth, imageHeight))
-css = "ilb { display: inline-block; }  "
+css = ".ilb { display: inline-block; vertical-align: middle; }  "
 
 # helper function for adding to the css
 def Css(s):
@@ -233,11 +249,18 @@ for root in rootObjects:
     print "Root Object:", root
     index = 0
     size = rootObjects[root][0]['size']
-    Css("%s { background-image: url('%s'); width: %spx; height: %spx; } " % (root, "icon-sprite.png", size[0], size[1]))
+
+    if(retina):
+        Css("%s { background-image: url('%s'); background-size: %spx %spx; width: %spx; height: %spx; } " % (root, "icon-sprite.png", imageWidth/2, imageHeight/2, size[0]/2, size[1]/2))
+    else:
+        Css("%s { background-image: url('%s'); width: %spx; height: %spx; } " % (root, "icon-sprite.png", size[0], size[1]))
     
     for obj in rootObjects[root]:
         left = index*size[0]
-        Css("%s { background-position: -%spx -%spx; } \n" % (obj['selector'], left, top)  )
+        if retina:
+            Css("%s { background-position: -%spx -%spx; } \n" % (obj['selector'], left/2, top/2)  )
+        else:
+            Css("%s { background-position: -%spx -%spx; } \n" % (obj['selector'], left, top)  )
 
         newImage = Image.open(obj['file']);
         image.paste(newImage, (left, top))
@@ -253,7 +276,7 @@ for obj in backgroundObjects:
     shutil.copy(obj['file'], os.path.join(outputPath, basename)) 
     # add to css
     Css("%s { background-image: url('%s');} " % (obj['selector'], basename))
-    
+
 
 
 print "   Saving"
